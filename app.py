@@ -200,6 +200,6 @@ st.markdown(f"""
 <div style='text-align:center; margin-top:30px; color:{text_color};'>
 <hr>
 Final Lab Exam – Data Science | Dataset: Pima Indians Diabetes Dataset <br>
-Developed Hamza Ashraf
+Developed by Hamza Ashraf
 </div>
 """, unsafe_allow_html=True)

@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import joblib
 import pandas as pd
-import plotly.express as px
+import altair as alt  # For interactive charts
 
 # -----------------------------
 # Page Config
@@ -151,13 +151,19 @@ if predict:
 
     with tabs[2]:
         st.markdown('<div class="card">', unsafe_allow_html=True)
+        # Probability Bar Chart using Altair
         prob_df = pd.DataFrame({
             "Class": ["Non-Diabetic", "Diabetic"],
             "Probability": probability
         })
-        fig = px.bar(prob_df, x="Class", y="Probability", color="Class", text="Probability",
-                     color_discrete_map={"Non-Diabetic":"green","Diabetic":"red"})
-        st.plotly_chart(fig, use_container_width=True)
+        chart = alt.Chart(prob_df).mark_bar().encode(
+            x='Class',
+            y='Probability',
+            color=alt.Color('Class', scale=alt.Scale(domain=['Non-Diabetic','Diabetic'],
+                                                    range=['green','red'])),
+            tooltip=['Class','Probability']
+        )
+        st.altair_chart(chart, use_container_width=True)
 
         # Sample Confusion Matrix
         cm_df = pd.DataFrame([[90, 10],[15, 85]], columns=["Predicted 0","Predicted 1"],

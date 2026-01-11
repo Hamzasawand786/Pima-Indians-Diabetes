@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 import joblib
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 # -----------------------------
 # Page Configuration
@@ -21,19 +20,16 @@ pca = joblib.load("pca_transformer.pkl")
 scaler = joblib.load("scaler.pkl")
 
 BEST_MODEL_NAME = "Random Forest Classifier"
-MODEL_ACCURACY = 0.89   # replace with your real accuracy
+MODEL_ACCURACY = 0.89      # change if needed
 PCA_COMPONENTS = pca.n_components_
 
 # -----------------------------
-# Custom CSS (Premium UI Look)
+# Custom CSS
 # -----------------------------
 st.markdown("""
 <style>
-body {
-    background-color: #f7fbff;
-}
 .main-title {
-    font-size: 42px;
+    font-size: 40px;
     font-weight: 800;
     color: #0b3c5d;
 }
@@ -65,54 +61,46 @@ body {
 """, unsafe_allow_html=True)
 
 # -----------------------------
-# Header Section
+# Header
 # -----------------------------
 st.markdown('<div class="main-title">🩺 Diabetes Prediction & Analysis Dashboard</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">AI-based Binary Classification using PCA & Machine Learning</div>', unsafe_allow_html=True)
 
 st.write("""
-This system predicts whether a patient is **Diabetic** or **Non-Diabetic** using 
-advanced Machine Learning models and PCA-based dimensionality reduction.
-It simulates a real-world medical diagnostic dashboard.
+This application predicts whether a patient is **Diabetic** or **Non-Diabetic** using 
+Machine Learning and PCA. It is designed as a professional healthcare diagnostic dashboard.
 """)
 
 st.divider()
 
 # -----------------------------
-# Model Information Panel
+# Model Info Panel
 # -----------------------------
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric("🏆 Best Model", BEST_MODEL_NAME)
-
-with col2:
-    st.metric("🎯 Model Accuracy", f"{MODEL_ACCURACY*100:.2f}%")
-
-with col3:
-    st.metric("📊 PCA Components (95% Variance)", PCA_COMPONENTS)
-
+c1, c2, c3 = st.columns(3)
+c1.metric("🏆 Best Model", BEST_MODEL_NAME)
+c2.metric("🎯 Model Accuracy", f"{MODEL_ACCURACY*100:.2f}%")
+c3.metric("📊 PCA Components (95% Variance)", PCA_COMPONENTS)
 st.progress(MODEL_ACCURACY)
 
 st.divider()
 
 # -----------------------------
-# Patient Input Section
+# Input Section
 # -----------------------------
-st.markdown("### 🧾 Patient Medical Information")
+st.markdown("## 🧾 Patient Medical Information")
 
 with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    c1, c2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-    with c1:
-        Pregnancies = st.number_input("🤰 Pregnancies", 0, 20, 1, help="Number of times pregnant")
-        Glucose = st.slider("🩸 Glucose Level", 0, 200, 120)
+    with col1:
+        Pregnancies = st.number_input("🤰 Pregnancies", 0, 20, 1)
+        Glucose = st.slider("🩸 Glucose", 0, 200, 120)
         BloodPressure = st.slider("💓 Blood Pressure", 0, 150, 70)
         SkinThickness = st.slider("📏 Skin Thickness", 0, 100, 20)
 
-    with c2:
-        Insulin = st.slider("💉 Insulin Level", 0, 900, 80)
+    with col2:
+        Insulin = st.slider("💉 Insulin", 0, 900, 80)
         BMI = st.slider("⚖️ BMI", 0.0, 60.0, 25.0)
         DPF = st.slider("🧬 Diabetes Pedigree Function", 0.0, 3.0, 0.5)
         Age = st.slider("🎂 Age", 1, 100, 30)
@@ -122,7 +110,7 @@ with st.container():
 st.divider()
 
 # -----------------------------
-# Prediction Button
+# Predict Button
 # -----------------------------
 st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
 predict = st.button("🔍 Predict Diabetes Status")
@@ -140,28 +128,25 @@ if predict:
 
     prediction = model.predict(input_pca)[0]
     probability = model.predict_proba(input_pca)[0]
-
     confidence = np.max(probability) * 100
 
     st.divider()
     st.markdown("## 🩺 Prediction Result")
 
     if prediction == 1:
-        st.markdown(
-            f"""
-            <div class="card" style="border-left:8px solid red;">
-            <h2>⚠️ Diabetic (1)</h2>
-            <p><b>Confidence:</b> {confidence:.2f}%</p>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="card" style="border-left:8px solid red;">
+        <h2>⚠️ Diabetic (1)</h2>
+        <p><b>Confidence:</b> {confidence:.2f}%</p>
+        </div>
+        """, unsafe_allow_html=True)
     else:
-        st.markdown(
-            f"""
-            <div class="card" style="border-left:8px solid green;">
-            <h2>✅ Non-Diabetic (0)</h2>
-            <p><b>Confidence:</b> {confidence:.2f}%</p>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="card" style="border-left:8px solid green;">
+        <h2>✅ Non-Diabetic (0)</h2>
+        <p><b>Confidence:</b> {confidence:.2f}%</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     # -----------------------------
     # Visualization Panel
@@ -173,7 +158,7 @@ if predict:
         st.markdown("### Prediction Probability")
         fig, ax = plt.subplots()
         ax.bar(["Non-Diabetic", "Diabetic"], probability)
-        ax.set_ylim(0,1)
+        ax.set_ylim(0, 1)
         ax.set_ylabel("Probability")
         st.pyplot(fig)
 
@@ -181,10 +166,20 @@ if predict:
         st.markdown("### Sample Confusion Matrix (Demo)")
         cm = np.array([[90, 10],
                        [15, 85]])
+
         fig2, ax2 = plt.subplots()
-        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax2)
+        ax2.imshow(cm)
+        ax2.set_xticks([0,1])
+        ax2.set_yticks([0,1])
+        ax2.set_xticklabels(["Non-Diabetic", "Diabetic"])
+        ax2.set_yticklabels(["Non-Diabetic", "Diabetic"])
         ax2.set_xlabel("Predicted")
         ax2.set_ylabel("Actual")
+
+        for i in range(2):
+            for j in range(2):
+                ax2.text(j, i, cm[i, j], ha="center", va="center", color="black")
+
         st.pyplot(fig2)
 
 # -----------------------------

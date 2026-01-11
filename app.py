@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import joblib
 import pandas as pd
-import altair as alt  # For interactive charts
+import altair as alt  # Built-in, interactive charts
 
 # -----------------------------
 # Page Config
@@ -25,7 +25,7 @@ with col_theme:
         st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
 # -----------------------------
-# CSS Styling
+# Theme Colors
 # -----------------------------
 if st.session_state.theme == "light":
     primary_color = "#0f9b8e"
@@ -38,35 +38,56 @@ else:
     text_color = "white"
     card_bg = "#161b22"
 
+# -----------------------------
+# CSS Styling
+# -----------------------------
 st.markdown(f"""
-    <style>
-        body {{background-color:{bg_color}; color:{text_color}; font-family:sans-serif;}}
-        .main-title {{font-size:42px; font-weight:800; color:{primary_color}; margin-bottom:0;}}
-        .sub-title {{font-size:18px; color:{primary_color}; margin-top:0;}}
-        .card {{
-            background:{card_bg};
-            padding:20px;
-            border-radius:15px;
-            box-shadow: 0px 0px 20px rgba(0,0,0,0.1);
-            margin-bottom:20px;
-        }}
-        .btn-primary {{
-            background: linear-gradient(90deg, #0f9b8e, #00c6ff);
-            color:white;
-            font-size:18px;
-            font-weight:bold;
-            border-radius:12px;
-            padding:10px 0;
-            width:100%;
-            text-align:center;
-            display:inline-block;
-            cursor:pointer;
-            transition: 0.3s;
-        }}
-        .btn-primary:hover {{
-            opacity:0.9;
-        }}
-    </style>
+<style>
+body {{background-color:{bg_color}; color:{text_color}; font-family:sans-serif;}}
+
+.main-title {{font-size:42px; font-weight:800; color:{primary_color}; margin-bottom:0;}}
+.sub-title {{font-size:18px; color:{primary_color}; margin-top:0;}}
+
+.card {{
+    background:{card_bg};
+    padding:20px;
+    border-radius:15px;
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.1);
+    margin-bottom:20px;
+}}
+
+.btn-primary {{
+    background: linear-gradient(90deg, #0f9b8e, #00c6ff);
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    border-radius:12px;
+    padding:10px 0;
+    width:100%;
+    text-align:center;
+    display:inline-block;
+    cursor:pointer;
+    transition: 0.3s;
+}}
+.btn-primary:hover {{opacity:0.9;}}
+
+/* Bubble-style tabs */
+div[data-testid="stTabs"] > div {{gap: 15px;}}
+div[data-baseweb="tab"] {{
+    border-radius: 30px !important;
+    padding: 8px 25px !important;
+    font-weight: 600 !important;
+    transition: 0.3s;
+    border: 2px solid {primary_color};
+    background-color: {card_bg};
+    color: {text_color};
+}}
+div[data-baseweb="tab"][data-active="true"] {{
+    background-color: {primary_color} !important;
+    color: white !important;
+}}
+div[data-baseweb="tab"]:hover {{opacity:0.8; cursor:pointer;}}
+</style>
 """, unsafe_allow_html=True)
 
 # -----------------------------

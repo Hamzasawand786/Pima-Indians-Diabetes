@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import joblib
-import matplotlib.pyplot as plt
+import pandas as pd
 
 # -----------------------------
 # Page Configuration
@@ -20,7 +20,7 @@ pca = joblib.load("pca_transformer.pkl")
 scaler = joblib.load("scaler.pkl")
 
 BEST_MODEL_NAME = "Random Forest Classifier"
-MODEL_ACCURACY = 0.89      # change if needed
+MODEL_ACCURACY = 0.89   # update if you know exact value
 PCA_COMPONENTS = pca.n_components_
 
 # -----------------------------
@@ -28,34 +28,27 @@ PCA_COMPONENTS = pca.n_components_
 # -----------------------------
 st.markdown("""
 <style>
-.main-title {
-    font-size: 40px;
-    font-weight: 800;
-    color: #0b3c5d;
-}
-.sub-title {
-    font-size: 20px;
-    color: #3282b8;
-}
+.main-title {font-size:40px;font-weight:800;color:#0b3c5d;}
+.sub-title {font-size:20px;color:#3282b8;}
 .card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0px 0px 12px rgba(0,0,0,0.08);
+    background-color:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0px 0px 12px rgba(0,0,0,0.08);
 }
 .predict-btn button {
-    width: 100%;
-    height: 55px;
-    font-size: 18px;
-    font-weight: bold;
-    background: linear-gradient(90deg,#0f9b8e,#00c6ff);
-    color: white;
-    border-radius: 10px;
+    width:100%;
+    height:55px;
+    font-size:18px;
+    font-weight:bold;
+    background:linear-gradient(90deg,#0f9b8e,#00c6ff);
+    color:white;
+    border-radius:10px;
 }
 .footer {
-    text-align: center;
-    padding: 15px;
-    color: gray;
+    text-align:center;
+    padding:15px;
+    color:gray;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -67,8 +60,8 @@ st.markdown('<div class="main-title">🩺 Diabetes Prediction & Analysis Dashboa
 st.markdown('<div class="sub-title">AI-based Binary Classification using PCA & Machine Learning</div>', unsafe_allow_html=True)
 
 st.write("""
-This application predicts whether a patient is **Diabetic** or **Non-Diabetic** using 
-Machine Learning and PCA. It is designed as a professional healthcare diagnostic dashboard.
+This professional medical dashboard predicts whether a patient is **Diabetic** or **Non-Diabetic**
+using PCA and Machine Learning models trained on the Pima Indians Diabetes Dataset.
 """)
 
 st.divider()
@@ -85,7 +78,7 @@ st.progress(MODEL_ACCURACY)
 st.divider()
 
 # -----------------------------
-# Input Section
+# Patient Input Section
 # -----------------------------
 st.markdown("## 🧾 Patient Medical Information")
 
@@ -117,7 +110,7 @@ predict = st.button("🔍 Predict Diabetes Status")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------------
-# Output Section
+# Prediction Output
 # -----------------------------
 if predict:
     input_data = np.array([[Pregnancies, Glucose, BloodPressure, SkinThickness,
@@ -149,38 +142,25 @@ if predict:
         """, unsafe_allow_html=True)
 
     # -----------------------------
-    # Visualization Panel
+    # Visualization Panel (Streamlit Native)
     # -----------------------------
     st.markdown("## 📊 Visualization Panel")
-    v1, v2 = st.columns(2)
 
-    with v1:
-        st.markdown("### Prediction Probability")
-        fig, ax = plt.subplots()
-        ax.bar(["Non-Diabetic", "Diabetic"], probability)
-        ax.set_ylim(0, 1)
-        ax.set_ylabel("Probability")
-        st.pyplot(fig)
+    prob_df = pd.DataFrame({
+        "Class": ["Non-Diabetic", "Diabetic"],
+        "Probability": probability
+    })
 
-    with v2:
-        st.markdown("### Sample Confusion Matrix (Demo)")
-        cm = np.array([[90, 10],
-                       [15, 85]])
+    st.bar_chart(prob_df.set_index("Class"))
 
-        fig2, ax2 = plt.subplots()
-        ax2.imshow(cm)
-        ax2.set_xticks([0,1])
-        ax2.set_yticks([0,1])
-        ax2.set_xticklabels(["Non-Diabetic", "Diabetic"])
-        ax2.set_yticklabels(["Non-Diabetic", "Diabetic"])
-        ax2.set_xlabel("Predicted")
-        ax2.set_ylabel("Actual")
+    cm_df = pd.DataFrame(
+        [[90, 10], [15, 85]],
+        columns=["Predicted 0", "Predicted 1"],
+        index=["Actual 0", "Actual 1"]
+    )
 
-        for i in range(2):
-            for j in range(2):
-                ax2.text(j, i, cm[i, j], ha="center", va="center", color="black")
-
-        st.pyplot(fig2)
+    st.markdown("### Sample Confusion Matrix (Demo)")
+    st.dataframe(cm_df, use_container_width=True)
 
 # -----------------------------
 # Footer
